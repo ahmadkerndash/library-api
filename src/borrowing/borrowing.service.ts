@@ -26,7 +26,7 @@ countActiveBorrowings(userId: number): number {
             }
         const book: Book = this.booksService.findOne(bookId);// البحث عن الكتاب باستخدام خدمة الكتب
         if(book.isBorrowed){// التحقق مما إذا كان الكتاب مستعار بالفعل
-            throw new BadRequestException('This book is already borrowed.');
+            throw new ConflictException('This book is already borrowed.');
         }
         const activeCount=this.countActiveBorrowings(userId);// حساب عدد الكتب المستعارة من قبل المستخدم
         if(activeCount>=3){// التحقق مما إذا كان المستخدم قد استعاره بالفعل 3 كتب
