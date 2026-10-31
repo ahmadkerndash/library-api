@@ -69,38 +69,35 @@ export class UsersService implements OnModuleInit {
   }
 
   async create(createUserDto: CreateUserDto): Promise<UserResponse> {
-    const username = createUserDto.username.trim();
+  const username = createUserDto.username.trim();
 
-    const existingUser = this.users.find(
-      (user) => user.username === username,
-    );
+ 
+  const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    if (existingUser) {
-      throw new ConflictException('Username already exists');
-    }
+  
+  const existingUser = this.users.find((user) => user.username === username);
 
-    const hashedPassword = await bcrypt.hash(
-      createUserDto.password,
-      10,
-    );
-
-    const nextId =
-      this.users.length > 0
-        ? Math.max(...this.users.map((user) => user.id)) + 1
-        : 1;
-
-    const user: User = {
-      id: nextId,
-      username,
-      password: hashedPassword,
-      role: 'member',
-      isActive: true,
-    };
-
-    this.users.push(user);
-
-    return this.toUserResponse(user);
+  if (existingUser) {
+    throw new ConflictException('Username already exists');
   }
+
+  const nextId =
+    this.users.length > 0
+      ? Math.max(...this.users.map((user) => user.id)) + 1
+      : 1;
+
+  const user: User = {
+    id: nextId,
+    username,
+    password: hashedPassword,
+    role: 'member',
+    isActive: true,
+  };
+
+  this.users.push(user);
+
+  return this.toUserResponse(user);
+}
 
   deactivateUser(id: number): UserResponse {
     const user = this.users.find((user) => user.id === id);

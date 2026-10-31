@@ -1,11 +1,13 @@
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
   MaxLength,
- MinLength,
+  MinLength,
 } from 'class-validator';
 
 export class CreateUserDto {
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
